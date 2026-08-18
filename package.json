@@ -1,0 +1,10 @@
+{
+  "name": "tailored-care-living",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Production website for Tailored Care Living LLC",
+  "scripts": {
+    "dev": "python3 -m http.server 4173",
+    "check": "node --check assets/js/site.js && node --check assets/js/config.js && node --check assets/js/application.js"
+  }
+}
