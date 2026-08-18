@@ -20,7 +20,9 @@ function showStep(value) {
   submit.hidden = step !== 6;
   errorSummary.hidden = true;
   document.querySelector('.form-area').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  panels[step - 1].querySelector('h2').focus?.();
+  const heading = panels[step - 1].querySelector('h2');
+  heading.setAttribute('tabindex', '-1');
+  heading.focus({ preventScroll: true });
   if (step === 6) buildReview();
 }
 
