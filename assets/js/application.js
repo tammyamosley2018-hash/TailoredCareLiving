@@ -50,7 +50,7 @@ function buildReview() {
   const sections = [
     ['About You', [['Name', value('fullName')], ['Phone', value('phone')], ['Email', value('email')], ['Date of birth', value('birthDate')], ['Contact preference', value('contactMethod')]]],
     ['Housing Need', [['Applying for', value('applyingFor')], ['Move-in timeframe', value('moveIn')], ['Current situation', value('currentHousing')]]],
-    ['Independent Living', [['Lives independently', value('independent')], ['Manages medications', value('medications')], ['Purchases and prepares food', value('food')], ['Circumstance', value('circumstance')]]],
+    ['Daily Living & Support', [['Daily-living assistance', value('independent')], ['Medication management', value('medications')], ['Purchases and prepares food', value('food')], ['Circumstance', value('circumstance')]]],
     ['Income', [['Dependable monthly income', value('dependableIncome')], ['Income source', value('incomeSource')]]],
     ['Additional Information', [['Housing needs', value('additional')]]]
   ];
