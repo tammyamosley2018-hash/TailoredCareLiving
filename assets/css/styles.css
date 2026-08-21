@@ -39,10 +39,13 @@
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important;animation:none!important}[data-reveal]{opacity:1;transform:none}}
 
 /* Burgundy-and-gold brand direction */
-.button{background:linear-gradient(135deg,#861d3a,var(--burgundy));border-color:var(--gold);color:var(--gold-light);box-shadow:inset 0 0 0 1px rgba(227,199,143,.12)}
-.button:hover,.button:focus-visible{background:var(--gold-light);border-color:var(--gold-light);color:var(--wine)}
-.button-gold{background:var(--gold-light);border-color:var(--gold-light);color:var(--wine)}
-.button-gold:hover,.button-gold:focus-visible{background:#fff0c8;border-color:#fff0c8;color:var(--wine)}
+.button{position:relative;isolation:isolate;padding:1rem 1rem 1rem 1.55rem;background:linear-gradient(135deg,#861d3a,var(--burgundy));border-color:var(--gold);color:var(--gold-light);clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%,0 12px);box-shadow:inset 0 0 0 3px var(--burgundy),inset 0 0 0 4px rgba(227,199,143,.72)}
+.button span:last-child{display:grid;width:2rem;height:2rem;place-items:center;border:1px solid currentColor;line-height:1;clip-path:polygon(6px 0,100% 0,100% 100%,0 100%,0 6px)}
+.button:hover,.button:focus-visible{background:var(--gold-light);border-color:var(--gold-light);color:var(--wine);box-shadow:inset 0 0 0 3px var(--gold-light),inset 0 0 0 4px rgba(75,16,31,.45)}
+.button-small{padding:.7rem .75rem .7rem 1.15rem;clip-path:polygon(9px 0,calc(100% - 9px) 0,100% 9px,100% 100%,0 100%,0 9px)}
+.button-small span:last-child{width:1.7rem;height:1.7rem}
+.button-gold{background:var(--gold-light);border-color:var(--gold-light);color:var(--wine);box-shadow:inset 0 0 0 3px var(--gold-light),inset 0 0 0 4px rgba(75,16,31,.42)}
+.button-gold:hover,.button-gold:focus-visible{background:#fff0c8;border-color:#fff0c8;color:var(--wine);box-shadow:inset 0 0 0 3px #fff0c8,inset 0 0 0 4px rgba(75,16,31,.55)}
 .site-header{height:6rem}
 .brand{gap:0}
 .brand img{width:78px;height:78px;transition:width .3s var(--ease),height .3s var(--ease)}
