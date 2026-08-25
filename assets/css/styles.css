@@ -57,7 +57,7 @@
 .hero-grid{min-height:900px}
 .hero-logo{width:132px;margin:0 0 1.5rem;mix-blend-mode:screen}
 .door-frame .hero-poster{position:absolute;inset:0}
-.hero-video{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:cover;object-position:center;background:transparent}
+.hero-video{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:cover;object-position:center;border:0;background:#171310;pointer-events:none}
 .hero-lead{color:#ded4d2}
 .hero-figure figcaption{color:#b5a5a8}
 .who-section{background:#280914}

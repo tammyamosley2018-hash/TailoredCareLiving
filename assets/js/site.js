@@ -45,7 +45,7 @@ document.querySelectorAll('details').forEach(detail => {
 });
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const heroVideo = document.querySelector('.hero-video');
+const heroVideo = document.querySelector('video.hero-video');
 if (heroVideo) {
   heroVideo.muted = true;
   if (reducedMotion) {
