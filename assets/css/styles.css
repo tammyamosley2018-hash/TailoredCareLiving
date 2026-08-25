@@ -56,6 +56,8 @@
 .hero::before{background:radial-gradient(circle at 28% 34%,rgba(112,23,45,.72),transparent 48%),linear-gradient(145deg,#280914,#16080d 72%)}
 .hero-grid{min-height:900px}
 .hero-logo{width:132px;margin:0 0 1.5rem;mix-blend-mode:screen}
+.door-frame .hero-poster{position:absolute;inset:0}
+.hero-video{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:cover;object-position:center;background:transparent}
 .hero-lead{color:#ded4d2}
 .hero-figure figcaption{color:#b5a5a8}
 .who-section{background:#280914}
@@ -76,4 +78,7 @@
 }
 @media(max-width:480px){
   .hero-logo{width:104px;margin-bottom:1.1rem}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-video{display:none}
 }
