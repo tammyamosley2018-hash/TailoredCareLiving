@@ -1,0 +1,136 @@
+{
+  "name": "Tailored Care Living — Housing Inquiry",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "tailored-care-living-inquiry",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "https://tammyamosley2018-hash.github.io"
+        }
+      },
+      "id": "01-webhook",
+      "name": "Housing Inquiry Submitted",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body || {};\nconst clean = (value, limit = 1500) => String(value ?? '').trim().slice(0, limit);\n\nif (clean(body.website)) throw new Error('Submission rejected.');\nconst startedAt = Number(body.startedAt || 0);\nif (!startedAt || Date.now() - startedAt < 1500) throw new Error('Submission was too fast.');\n\nconst data = {\n  fullName: clean(body.fullName, 120),\n  phone: clean(body.phone, 30),\n  email: clean(body.email, 160).toLowerCase(),\n  bestContactTime: clean(body.bestContactTime, 40),\n  applyingFor: clean(body.applyingFor, 40),\n  occupants: clean(body.occupants, 3),\n  moveIn: clean(body.moveIn, 60),\n  currentHousing: clean(body.currentHousing, 1000),\n  housingOnly: clean(body.housingOnly, 80),\n  paymentSource: clean(body.paymentSource, 80),\n  additional: clean(body.additional, 1500),\n  consent: clean(body.consent, 10)\n};\n\nconst required = ['fullName','phone','bestContactTime','applyingFor','occupants','moveIn','currentHousing','housingOnly','paymentSource','consent'];\nif (required.some((field) => !data[field])) throw new Error('Please complete all required fields.');\nif (!/^\\d{1,2}$/.test(data.occupants) || Number(data.occupants) < 1 || Number(data.occupants) > 20) throw new Error('Please enter a valid number of occupants.');\nif (data.email && !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(data.email)) throw new Error('Please enter a valid email address.');\n\nconst date = new Date().toISOString().slice(0, 10).replaceAll('-', '');\nconst suffix = Math.floor(1000 + Math.random() * 9000);\nreturn [{ json: { ...data, reference: `TCL-${date}-${suffix}`, receivedAt: new Date().toISOString() } }];"
+      },
+      "id": "02-validate",
+      "name": "Validate and Normalize",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [240, 0]
+    },
+    {
+      "parameters": {
+        "sendTo": "team@tailoredcarellc.com",
+        "subject": "=New housing inquiry — {{ $json.reference }}",
+        "message": "=A new housing inquiry was submitted through the Tailored Care Living website.\n\nReference: {{ $json.reference }}\nReceived: {{ $json.receivedAt }}\n\nCONTACT\nName: {{ $json.fullName }}\nPhone: {{ $json.phone }}\nEmail: {{ $json.email || 'Not provided' }}\nBest time to call: {{ $json.bestContactTime }}\n\nHOUSING NEED\nSeeking housing for: {{ $json.applyingFor }}\nIntended occupants: {{ $json.occupants }}\nMove-in timeframe: {{ $json.moveIn }}\nCurrent housing situation: {{ $json.currentHousing }}\n\nHOUSING SERVICES\nSeeking housing-only accommodations: {{ $json.housingOnly }}\nExpected payment source: {{ $json.paymentSource }}\n\nADDITIONAL INFORMATION\n{{ $json.additional || 'Not provided' }}\n\nThis inquiry requires individual human review. Do not approve or reject an applicant based only on this email.",
+        "options": {}
+      },
+      "id": "03-owner-email",
+      "name": "Notify Tailored Care Living",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [480, 0],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "eVuIH5uDzE9skC4F",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "has-email",
+              "leftValue": "={{ $('Validate and Normalize').item.json.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "04-has-email",
+      "name": "Applicant Provided Email?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [720, 0]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Validate and Normalize').item.json.email }}",
+        "subject": "=Tailored Care Living inquiry received — {{ $('Validate and Normalize').item.json.reference }}",
+        "message": "=Hello {{ $('Validate and Normalize').item.json.fullName }},\n\nThank you for contacting Tailored Care Living. We received your housing inquiry.\n\nReference number: {{ $('Validate and Normalize').item.json.reference }}\n\nA member of the team will review your inquiry and contact you about appropriate next steps. Submitting an inquiry does not guarantee acceptance or housing availability.\n\nPlease do not reply with Social Security, banking, medical, or benefit account numbers.\n\nTailored Care Living",
+        "options": {}
+      },
+      "id": "05-applicant-email",
+      "name": "Send Applicant Receipt",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [960, -100],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "eVuIH5uDzE9skC4F",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, reference: $('Validate and Normalize').item.json.reference } }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "06-response",
+      "name": "Return Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [1200, 0]
+    }
+  ],
+  "connections": {
+    "Housing Inquiry Submitted": {
+      "main": [[{"node": "Validate and Normalize", "type": "main", "index": 0}]]
+    },
+    "Validate and Normalize": {
+      "main": [[{"node": "Notify Tailored Care Living", "type": "main", "index": 0}]]
+    },
+    "Notify Tailored Care Living": {
+      "main": [[{"node": "Applicant Provided Email?", "type": "main", "index": 0}]]
+    },
+    "Applicant Provided Email?": {
+      "main": [
+        [{"node": "Send Applicant Receipt", "type": "main", "index": 0}],
+        [{"node": "Return Success", "type": "main", "index": 0}]
+      ]
+    },
+    "Send Applicant Receipt": {
+      "main": [[{"node": "Return Success", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

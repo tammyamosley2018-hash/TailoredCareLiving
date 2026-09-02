@@ -16,14 +16,14 @@ function showStep(value) {
     item.classList.toggle('complete', index + 1 < step);
   });
   back.hidden = step === 1;
-  next.hidden = step === 6;
-  submit.hidden = step !== 6;
+  next.hidden = step === panels.length;
+  submit.hidden = step !== panels.length;
   errorSummary.hidden = true;
   document.querySelector('.form-area').scrollIntoView({ behavior: 'smooth', block: 'start' });
   const heading = panels[step - 1].querySelector('h2');
   heading.setAttribute('tabindex', '-1');
   heading.focus({ preventScroll: true });
-  if (step === 6) buildReview();
+  if (step === panels.length) buildReview();
 }
 
 function validatePanel() {
@@ -48,33 +48,42 @@ function value(name) {
 
 function buildReview() {
   const sections = [
-    ['About You', [['Name', value('fullName')], ['Phone', value('phone')], ['Email', value('email')], ['Date of birth', value('birthDate')], ['Contact preference', value('contactMethod')]]],
-    ['Housing Need', [['Applying for', value('applyingFor')], ['Move-in timeframe', value('moveIn')], ['Current situation', value('currentHousing')]]],
-    ['Daily Living & Support', [['Daily-living assistance', value('independent')], ['Medication management', value('medications')], ['Purchases and prepares food', value('food')], ['Circumstance', value('circumstance')]]],
-    ['Income', [['Dependable monthly income', value('dependableIncome')], ['Income source', value('incomeSource')]]],
-    ['Additional Information', [['Housing needs', value('additional')]]]
+    ['Contact', [['Name', value('fullName')], ['Phone', value('phone')], ['Email', value('email')], ['Best time to call', value('bestContactTime')]]],
+    ['Housing Need', [['Seeking housing for', value('applyingFor')], ['Intended occupants', value('occupants')], ['Move-in timeframe', value('moveIn')], ['Current situation', value('currentHousing')]]],
+    ['Housing Services', [['Seeking housing-only accommodations', value('housingOnly')], ['Expected payment source', value('paymentSource')]]],
+    ['Additional Information', [['Housing information', value('additional')]]]
   ];
   document.querySelector('#review').innerHTML = sections.map(([title, rows]) => `<div class="review-section"><h3>${escapeHtml(title)}</h3>${rows.map(([label, content]) => `<div class="review-row"><b>${escapeHtml(label)}</b><span>${escapeHtml(content)}</span></div>`).join('')}</div>`).join('');
 }
 
-function escapeHtml(input) { const div = document.createElement('div'); div.textContent = input; return div.innerHTML; }
+function escapeHtml(input) {
+  const div = document.createElement('div');
+  div.textContent = input;
+  return div.innerHTML;
+}
+
 next.addEventListener('click', () => { if (validatePanel()) showStep(step + 1); });
 back.addEventListener('click', () => showStep(step - 1));
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
   if (!validatePanel()) return;
-  submit.disabled = true; submit.textContent = 'Submitting…';
+  submit.disabled = true;
+  submit.textContent = 'Submitting…';
   try {
     const endpoint = window.TCL_CONFIG?.applicationEndpoint;
-    if (!endpoint || !endpoint.startsWith('https://')) throw new Error('Application delivery has not been configured yet.');
+    if (!endpoint || !endpoint.startsWith('https://')) throw new Error('Inquiry delivery has not been configured yet.');
     const response = await fetch(endpoint, { method: 'POST', headers: { 'Accept': 'application/json' }, body: new FormData(form) });
     const result = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(result.error || (result.errors && result.errors[0]?.message) || 'Unable to submit the application.');
+    if (!response.ok) throw new Error(result.message || 'Unable to submit the inquiry.');
     form.hidden = true;
-    const success = document.querySelector('#success'); success.hidden = false; success.focus();
+    document.querySelector('#reference-number').textContent = result.reference || 'provided by email';
+    const success = document.querySelector('#success');
+    success.hidden = false;
+    success.focus();
   } catch (error) {
-    errorSummary.textContent = `${error.message} Please try again or return later.`;
+    errorSummary.textContent = `${error.message} Please try again later or contact Tailored Care Living directly.`;
     errorSummary.hidden = false;
-    submit.disabled = false; submit.textContent = 'Submit Application';
+    submit.disabled = false;
+    submit.textContent = 'Submit Inquiry';
   }
 });
