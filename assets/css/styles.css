@@ -114,6 +114,21 @@
   height:.55rem;
   margin:0 .25rem;
 }
+.experience-list{
+  counter-reset:none;
+}
+.experience-list li{
+  counter-increment:none;
+  padding-left:2rem;
+}
+.experience-list li::before{
+  content:"";
+  top:1.55rem;
+  width:.5rem;
+  height:.5rem;
+  border:1px solid var(--burgundy);
+  transform:rotate(45deg);
+}
 
 @media(max-width:1050px){
   .manifesto-grid{grid-template-columns:1fr 1fr}
