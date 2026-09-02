@@ -129,6 +129,13 @@
   border:1px solid var(--burgundy);
   transform:rotate(45deg);
 }
+.population-feature-primary .population-copy{
+  isolation:isolate;
+  border:1px solid var(--gold);
+  background:linear-gradient(135deg,#70172d,var(--wine));
+  clip-path:polygon(18px 0,calc(100% - 18px) 0,100% 18px,100% 100%,0 100%,0 18px);
+  box-shadow:inset 0 0 0 5px var(--wine),inset 0 0 0 6px rgba(227,199,143,.65);
+}
 
 @media(max-width:1050px){
   .manifesto-grid{grid-template-columns:1fr 1fr}
